@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目工具盒 — AChengLinus Tools</title>
+<link rel="icon" type="image/png" sizes="131x96" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: rgba(18, 18, 30, 0.75);
+  --bg-card-hover: rgba(30, 30, 50, 0.85);
+  --border: rgba(59, 130, 246, 0.12);
+  --border-hover: rgba(59, 130, 246, 0.35);
+  --text-primary: #e8e8ed;
+  --text-secondary: #8888a0;
+  --text-muted: #555570;
+  --accent: #3b82f6;
+  --accent-2: #60a5fa;
+  --accent-hover: #2563eb;
+  --accent-glow: rgba(59, 130, 246, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+/* ===== Day Mode (蓝天白云) ===== */
+[data-theme="day"] {
+  --bg-primary: #e8f4fd;
+  --bg-secondary: #d0e8f7;
+  --bg-card: rgba(255, 255, 255, 0.78);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --border: rgba(37, 99, 235, 0.18);
+  --border-hover: rgba(37, 99, 235, 0.45);
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #8899aa;
+  --accent: #2563eb;
+  --accent-2: #3b82f6;
+  --accent-hover: #1d4ed8;
+  --accent-glow: rgba(37, 99, 235, 0.10);
+}
+
+[data-theme="day"] body::before {
+  background:
+    radial-gradient(800px circle at 20% 30%, rgba(37, 99, 235, 0.10) 0%, transparent 70%),
+    radial-gradient(600px circle at 80% 70%, rgba(96, 165, 250, 0.14) 0%, transparent 70%) !important;
+}
+
+[data-theme="day"] .grid-overlay {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px) !important;
+}
+
+[data-theme="day"] .card {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+[data-theme="day"] .card:hover {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+[data-theme="day"] .brand {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(37, 99, 235, 0.12);
+}
+
+[data-theme="day"] .domain-tag {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-secondary);
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Ambient background effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(800px circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 70%),
+    radial-gradient(600px circle at 80% 70%, rgba(96, 165, 250, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.4s ease;
+}
+
+/* Grid overlay */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-image 0.4s ease;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== Hero ===== */
+.hero {
+  padding: 96px 0 64px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 6vw, 60px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ===== Projects Grid ===== */
+.projects {
+  padding: 24px 0 100px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s, background 0.4s ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-6px);
+  background: var(--bg-card-hover);
+  box-shadow: 0 16px 40px var(--accent-glow);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* 品牌 logo 区域 */
+.brand {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 16px;
+  margin-bottom: 22px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.brand img {
+  max-height: 44px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.card .sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.card p.desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 22px;
+  flex-grow: 1;
+}
+
+.domain-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  transition: background 0.4s ease, border-color 0.4s ease;
+  word-break: break-all;
+}
+
+.domain-tag .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px var(--accent-glow);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-ghost:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card);
+  transform: translateY(-2px);
+}
+
+/* ===== Footer ===== */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 0;
+  text-align: center;
+  transition: border-color 0.4s ease;
+}
+
+.footer p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.footer .mono {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+}
+
+/* ===== Version Choice Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-box h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.modal-box p.sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.version-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.version-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 24px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  color: var(--text-primary);
+  display: block;
+}
+
+.version-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px var(--accent-glow);
+}
+
+.version-card .vc-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.version-card .vc-label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.version-card .vc-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: block;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.modal-cancel {
+  padding: 10px 24px;
+  font-size: 14px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.modal-cancel:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card);
+}
+
+@media (max-width: 600px) {
+  .version-cards { grid-template-columns: 1fr; }
+}
+
+/* ===== Scroll Animations ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .hero { padding: 80px 0 48px; }
+  .hero h1 { font-size: 32px; }
+  .card-actions { flex-direction: column; }
+  .card { padding: 26px 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="container">
+    <h1 class="fade-in">项目<span class="gradient">工具盒</span></h1>
+    <p class="fade-in">
+      华矩系列工具的统一入口，汇集太阳能电池板检测与数据处理相关的各类在线工具，
+      点击卡片即可快速进入对应项目。
+    </p>
+  </div>
+</header>
+
+<!-- ===== Projects ===== -->
+<section class="projects">
+  <div class="container">
+    <div class="projects-grid">
+
+      <!-- EL 裁剪 -->
+      <div class="card fade-in">
+        <div class="brand">
+          <img src="assets/el-logo.png" alt="EL 裁剪">
+        </div>
+        <h2>EL 裁剪</h2>
+        <span class="sub">el.acheng9616.com</span>
+        <p class="desc">
+          太阳能电池板 EL 检测图像自动裁剪工具，支持电致发光（Electroluminescence）图像的批量定位与精确裁切。
+        </p>
+        <div class="domain-tag"><span class="dot"></span>https://el.acheng9616.com/</div>
+        <div class="card-actions">
+          <a class="btn-primary" href="javascript:void(0)" onclick="showVersionModal()">进入工具 ↗</a>
+          <a class="btn-ghost" href="https://el.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+        </div>
+      </div>
+
+      <!-- PR 数据处理 -->
+      <div class="card fade-in">
+        <div class="brand">
+          <img src="assets/pr-logo.jpg" alt="PR 数据处理">
+        </div>
+        <h2>PR 数据处理</h2>
+        <span class="sub">pr.acheng9616.com</span>
+        <p class="desc">
+          太阳能电站性能比（Performance Ratio）数据处理工具，支持发电数据的清洗、统计与指标分析。
+        </p>
+        <div class="domain-tag"><span class="dot"></span>https://pr.acheng9616.com/</div>
+        <div class="card-actions">
+          <a class="btn-primary" href="https://pr.acheng9616.com/" target="_blank" rel="noopener">进入工具 ↗</a>
+          <a class="btn-ghost" href="https://pr.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+        </div>
+      </div>
+
+      <!-- 图片标记 -->
+      <div class="card fade-in">
+        <div class="brand">
+          <img src="assets/pt-logo.jpg" alt="图片标记">
+        </div>
+        <h2>图片标记</h2>
+        <span class="sub">pt.acheng9616.com</span>
+        <p class="desc">
+          图像标注与标记工具，用于对检测图像进行框选、标注与分类，为数据集制作与模型训练提供支持。
+        </p>
+        <div class="domain-tag"><span class="dot"></span>https://pt.acheng9616.com/</div>
+        <div class="card-actions">
+          <a class="btn-primary" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">进入工具 ↗</a>
+          <a class="btn-ghost" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="container">
+    <p>项目工具盒 · <span class="mono">AChengLinus Tools</span> · 华矩系列在线工具统一入口</p>
+  </div>
+</footer>
+
+<!-- ===== Version Choice Modal ===== -->
+<div class="modal-overlay" id="versionModal" onclick="if(event.target===this)closeVersionModal()">
+  <div class="modal-box">
+    <h3>选择使用方式</h3>
+    <p class="sub">请选择适合您的方式使用华矩EL裁剪工具。</p>
+    <div class="version-cards">
+      <a href="javascript:void(0)" class="version-card" onclick="goServer()">
+        <span class="vc-icon">🌐</span>
+        <span class="vc-label">服务器版（局域网）</span>
+        <span class="vc-hint">部署在实验室的局域网服务器，无需安装</span>
+      </a>
+      <a href="javascript:void(0)" class="version-card" onclick="goOffline()">
+        <span class="vc-icon">💻</span>
+        <span class="vc-label">下载离线版</span>
+        <span class="vc-hint">下载到本机使用，双击 EXE 启动<br>适合外网/远程办公场景</span>
+      </a>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeVersionModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Version Choice Modal =====
+function showVersionModal() {
+  document.getElementById('versionModal').classList.add('open');
+}
+function closeVersionModal() {
+  document.getElementById('versionModal').classList.remove('open');
+}
+function goServer() {
+  window.open('http://192.168.3.119:15789', '_blank');
+  closeVersionModal();
+}
+function goOffline() {
+  window.open('https://ug.link/acheng9616/filemgr/share-download/?id=98f5b410141245c7aefb0f5822416301', '_blank');
+  closeVersionModal();
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeVersionModal();
+});
+
+// ===== 滚动入场动画 =====
+(function () {
+  const items = document.querySelectorAll('.fade-in');
+  if (!('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('visible'); });
+    return;
+  }
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  items.forEach(function (el, i) {
+    // 卡片依次错开，形成渐次入场
+    el.style.transitionDelay = (i * 80) + 'ms';
+    io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>
