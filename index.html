@@ -455,6 +455,32 @@ body::before {
   background: var(--bg-card);
 }
 
+/* ===== Password Modal ===== */
+.pwd-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: inherit;
+  margin-bottom: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pwd-input:focus {
+  border-color: var(--accent);
+}
+
+.pwd-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: none;
+}
+
 @media (max-width: 600px) {
   .version-cards { grid-template-columns: 1fr; }
 }
@@ -489,7 +515,7 @@ body::before {
   <div class="container">
     <h1 class="fade-in">项目<span class="gradient">工具盒</span></h1>
     <p class="fade-in">
-      华矩系列工具的统一入口，汇集光伏项目数据处理相关的各类在线工具，
+      华矩系列工具的统一入口，汇集太阳能电池板检测与数据处理相关的各类在线工具，
       点击卡片即可快速进入对应项目。
     </p>
   </div>
@@ -500,12 +526,12 @@ body::before {
   <div class="container">
     <div class="projects-grid">
 
-      <!-- EL 图片裁剪 -->
+      <!-- EL 裁剪 -->
       <div class="card fade-in">
         <div class="brand">
           <img src="assets/el-logo.png" alt="EL 裁剪">
         </div>
-        <h2>EL 图片裁剪</h2>
+        <h2>EL 裁剪</h2>
         <span class="sub">el.acheng9616.com</span>
         <p class="desc">
           太阳能电池板 EL 检测图像自动裁剪工具，支持电致发光（Electroluminescence）图像的批量定位与精确裁切。
@@ -525,7 +551,7 @@ body::before {
         <h2>PR 数据处理</h2>
         <span class="sub">pr.acheng9616.com</span>
         <p class="desc">
-          太阳能电站性能比（Performance Ratio）数据处理工具，支持发电数据、统计与指标分析。
+          太阳能电站性能比（Performance Ratio）数据处理工具，支持发电数据的清洗、统计与指标分析。
         </p>
         <div class="domain-tag"><span class="dot"></span>https://pr.acheng9616.com/</div>
         <div class="card-actions">
@@ -542,12 +568,29 @@ body::before {
         <h2>图片标记</h2>
         <span class="sub">pt.acheng9616.com</span>
         <p class="desc">
-          图像标注与标记工具，用于对检测图像进行框选、标注与分类，对数量进行清点。
+          图像标注与标记工具，用于对检测图像进行框选、标注与分类，为数据集制作与模型训练提供支持。
         </p>
         <div class="domain-tag"><span class="dot"></span>https://pt.acheng9616.com/</div>
         <div class="card-actions">
           <a class="btn-primary" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">进入工具 ↗</a>
           <a class="btn-ghost" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+        </div>
+      </div>
+
+      <!-- 电站仿真偏差分析工具 -->
+      <div class="card fade-in">
+        <div class="brand">
+          <img src="assets/dev-logo.jpg" alt="电站仿真偏差分析工具">
+        </div>
+        <h2>电站仿真偏差分析工具</h2>
+        <span class="sub">dat.acheng9616.com</span>
+        <p class="desc">
+          电站仿真数据偏差分析工具，用于对比仿真模型与实际发电数据的偏差，辅助评估模型精度与运行状态。
+        </p>
+        <div class="domain-tag"><span class="dot"></span>https://dat.acheng9616.com/</div>
+        <div class="card-actions">
+          <a class="btn-primary" href="javascript:void(0)" onclick="showPasswordModal()">进入工具 ↗</a>
+          <a class="btn-ghost" href="javascript:void(0)" onclick="showPasswordModal()">🔗</a>
         </div>
       </div>
 
@@ -585,6 +628,20 @@ body::before {
   </div>
 </div>
 
+<!-- ===== Password Modal ===== -->
+<div class="modal-overlay" id="passwordModal" onclick="if(event.target===this)closePasswordModal()">
+  <div class="modal-box">
+    <h3>输入访问密码</h3>
+    <p class="sub">电站仿真偏差分析工具受密码保护，请输入密码后进入。<br>该密码请向 <strong>AChengLinus</strong> 获取。</p>
+    <input type="password" id="pwdInput" class="pwd-input" placeholder="请输入访问密码" autocomplete="off" onkeydown="if(event.key==='Enter')checkPassword()">
+    <p class="pwd-error" id="pwdError">密码错误，请重试。</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closePasswordModal()">取消</button>
+      <button class="btn-primary" style="flex:none;" onclick="checkPassword()">确认进入</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== Version Choice Modal =====
 function showVersionModal() {
@@ -602,8 +659,31 @@ function goOffline() {
   closeVersionModal();
 }
 
+// ===== Password Modal =====
+function showPasswordModal() {
+  document.getElementById('passwordModal').classList.add('open');
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdError').style.display = 'none';
+  setTimeout(function () { document.getElementById('pwdInput').focus(); }, 100);
+}
+function closePasswordModal() {
+  document.getElementById('passwordModal').classList.remove('open');
+}
+function checkPassword() {
+  var v = document.getElementById('pwdInput').value;
+  if (v === 'hjjc') {
+    closePasswordModal();
+    window.open('https://ug.link/acheng9616/filemgr/share-download/?id=d36c5e1a51774e5090649779e7b5c235', '_blank');
+  } else {
+    document.getElementById('pwdError').style.display = 'block';
+  }
+}
+
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') closeVersionModal();
+  if (e.key === 'Escape') {
+    closeVersionModal();
+    closePasswordModal();
+  }
 });
 
 // ===== 滚动入场动画 =====
