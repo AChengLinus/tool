@@ -668,6 +668,11 @@ body::before {
   transform: translateY(0);
 }
 
+/* 片头结束后会程序化聚焦标题（读屏用），不需要焦点框 */
+#heroTitle:focus {
+  outline: none;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   .hero { padding: 80px 0 48px; }
@@ -676,8 +681,95 @@ body::before {
   .card { padding: 26px 22px; }
 }
 </style>
+<link rel="stylesheet" href="intro.css">
 </head>
-<body>
+<body class="intro-active">
+
+<noscript>
+  <style>
+    /* 无 JS 时直接让位给工具页，避免被片头锁住 */
+    .intro { display: none !important; }
+    body.intro-active { overflow: auto !important; }
+  </style>
+</noscript>
+
+<!-- ===== 华矩品牌片头（ESC / 跳过片头 立即进入，页脚可重播） ===== -->
+<section class="intro" id="intro" aria-label="华矩检测品牌片头">
+  <div class="intro-bg" aria-hidden="true">
+    <div class="bg-orb bg-orb-a"></div>
+    <div class="bg-orb bg-orb-b"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-horizon"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <canvas id="energy-canvas" class="energy-canvas" aria-hidden="true"></canvas>
+
+  <div class="intro-chrome" aria-hidden="true">
+    <div class="chrome-top">
+      <span class="chrome-brand">HUAJU <i>/</i> TESTING</span>
+      <span class="chrome-center"><i></i> BRAND INTRO <i></i></span>
+      <span class="chrome-sector">PV · ESS · TESTING</span>
+    </div>
+    <div class="chrome-bottom">
+      <span>PRECISION / DATA / RELIABILITY</span>
+      <span>HJ — 001</span>
+    </div>
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+  </div>
+
+  <div class="intro-stage">
+    <div class="mark-stage">
+      <div class="orbit" aria-hidden="true">
+        <span class="orbit-ring orbit-ring-outer"></span>
+        <span class="orbit-ring orbit-ring-inner"></span>
+        <span class="orbit-ticks"></span>
+        <span class="orbit-sweep"></span>
+        <span class="orbit-axis orbit-axis-x"></span>
+        <span class="orbit-axis orbit-axis-y"></span>
+        <span class="orbit-node node-1"></span>
+        <span class="orbit-node node-2"></span>
+        <span class="orbit-node node-3"></span>
+        <span class="orbit-node node-4"></span>
+        <span class="orbit-label label-n">PV <i>/</i> 01</span>
+        <span class="orbit-label label-e">ESS <i>/</i> 02</span>
+        <span class="orbit-label label-w">TEST <i>/</i> 03</span>
+        <span class="orbit-readout readout-left">SYS.READY</span>
+        <span class="orbit-readout readout-right">SCAN.ON</span>
+      </div>
+
+      <div class="emblem-wrap">
+        <span class="emblem-glow" aria-hidden="true"></span>
+        <span class="emblem" role="img" aria-label="华矩检测标识"></span>
+        <span class="emblem-scan" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <div class="intro-wordmark">
+      <span class="wordmark-cn" role="img" aria-label="华矩检测"></span>
+      <span class="wordmark-en" role="img" aria-label="HUAJU TESTING"></span>
+    </div>
+
+    <div class="intro-divider" aria-hidden="true"></div>
+
+    <p class="intro-sectors"><span>光伏</span><i></i><span>储能</span><i></i><span>检测</span></p>
+  </div>
+
+  <div class="intro-footer">
+    <div class="intro-progress" aria-hidden="true"><span></span></div>
+    <div class="intro-footer-row">
+      <span class="intro-status">BRAND IDENTIFICATION / 001</span>
+      <button type="button" class="skip-intro" id="skipIntro">跳过片头 <span>[ ESC ]</span></button>
+      <span class="intro-year">MMXXVI</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 工具页主体（片头期间 inert） ===== -->
+<div id="site">
 
 <div class="grid-overlay"></div>
 
@@ -688,7 +780,7 @@ body::before {
       <div class="logo">
         <img src="assets/logo.png" alt="项目工具盒 logo">
       </div>
-      <h1>项目<span class="gradient">工具盒</span></h1>
+      <h1 id="heroTitle" tabindex="-1">项目<span class="gradient">工具盒</span></h1>
     </div>
     <p class="fade-in">
       华矩系列工具的统一入口，汇集太阳能电池板检测与数据处理相关的各类在线工具，
@@ -802,6 +894,7 @@ body::before {
 <footer class="footer">
   <div class="container">
     <p>项目工具盒 · <span class="mono">AChengLinus Tools</span> · 华矩系列在线工具统一入口</p>
+    <button type="button" class="footer-replay" data-replay>↻ 重播品牌片头</button>
   </div>
 </footer>
 
@@ -841,6 +934,7 @@ body::before {
     </div>
   </div>
 </div>
+</div><!-- /#site -->
 
 <script>
 // ===== Version Choice Modal =====
@@ -886,27 +980,52 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-// ===== 滚动入场动画 =====
+// ===== 滚动入场动画（片头让位后才启动，保留 80ms 递进） =====
 (function () {
   const items = document.querySelectorAll('.fade-in');
-  if (!('IntersectionObserver' in window)) {
-    items.forEach(function (el) { el.classList.add('visible'); });
-    return;
-  }
-  const io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
+  let started = false;
+
+  function reveal() {
+    if (started) return;
+    started = true;
+
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('visible'); });
+      return;
+    }
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    items.forEach(function (el, i) {
+      // 卡片依次错开，形成渐次入场
+      el.style.transitionDelay = (i * 80) + 'ms';
+      io.observe(el);
     });
-  }, { threshold: 0.12 });
-  items.forEach(function (el, i) {
-    // 卡片依次错开，形成渐次入场
-    el.style.transitionDelay = (i * 80) + 'ms';
-    io.observe(el);
+  }
+
+  // 重播片头时先收回入场状态，让同一套递进动效再播一次
+  window.addEventListener('intro-replay', function () {
+    started = false;
+    items.forEach(function (el) { el.classList.remove('visible'); });
   });
+
+  // body.intro-active 表示片头正在播放：等片头开始退场时再入场
+  if (document.body.classList.contains('intro-active')) {
+    window.addEventListener('site-ready', reveal);
+    // 兜底：万一片头脚本异常未派发事件，8 秒后自行放行
+    window.setTimeout(function () {
+      if (!document.body.classList.contains('intro-active')) reveal();
+    }, 8000);
+  } else {
+    reveal();
+  }
 })();
 </script>
+<script src="intro.js"></script>
 </body>
 </html>
