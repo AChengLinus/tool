@@ -1,0 +1,19 @@
+name = "tool-rag-proxy"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+LLM_BASE_URL = "https://api.deepseek.com/v1"
+LLM_MODEL = "deepseek-chat"
+# 允许调用代理的站点，逗号分隔；不要写 *
+ALLOWED_ORIGINS = "https://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000"
+MAX_TOKENS = "700"
+DAILY_LIMIT = "30"
+
+# 可选：绑定一个 KV 命名空间后，Worker 会按 IP 做每日限额（防止公开接口被刷）
+# [[kv_namespaces]]
+# binding = "RAG_LIMIT"
+# id = "REPLACE_WITH_YOUR_KV_ID"
+
+# API Key 不要写在这里，用命令写入 Secret：
+#   wrangler secret put LLM_API_KEY

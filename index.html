@@ -682,6 +682,7 @@ body::before {
 }
 </style>
 <link rel="stylesheet" href="intro.css">
+<link rel="stylesheet" href="rag/assistant.css">
 </head>
 <body class="intro-active">
 
@@ -813,6 +814,10 @@ body::before {
           <div class="card-actions">
             <a class="btn-primary" href="javascript:void(0)" onclick="showVersionModal()">进入工具 ↗</a>
             <a class="btn-ghost" href="https://el.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+            <button class="btn-ask" type="button" data-ask="EL 裁剪工具怎么使用？" title="问 AI：EL 裁剪工具怎么使用？">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l1.8 4.4 4.4 1.8-4.4 1.8L12 15.6l-1.8-4.4L5.8 9.4l4.4-1.8L12 3.2z"/><path d="M18.6 15.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>
+              <span>问 AI 助手</span>
+            </button>
           </div>
         </div>
       </div>
@@ -836,6 +841,10 @@ body::before {
           <div class="card-actions">
             <a class="btn-primary" href="https://pr.acheng9616.com/" target="_blank" rel="noopener">进入工具 ↗</a>
             <a class="btn-ghost" href="https://pr.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+            <button class="btn-ask" type="button" data-ask="PR 数据处理工具怎么导入数据？" title="问 AI：PR 数据处理工具怎么导入数据？">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l1.8 4.4 4.4 1.8-4.4 1.8L12 15.6l-1.8-4.4L5.8 9.4l4.4-1.8L12 3.2z"/><path d="M18.6 15.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>
+              <span>问 AI 助手</span>
+            </button>
           </div>
         </div>
       </div>
@@ -859,6 +868,10 @@ body::before {
           <div class="card-actions">
             <a class="btn-primary" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">进入工具 ↗</a>
             <a class="btn-ghost" href="https://pt.acheng9616.com/" target="_blank" rel="noopener">🔗</a>
+            <button class="btn-ask" type="button" data-ask="图片标记工具支持哪些图片格式？" title="问 AI：图片标记工具支持哪些图片格式？">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l1.8 4.4 4.4 1.8-4.4 1.8L12 15.6l-1.8-4.4L5.8 9.4l4.4-1.8L12 3.2z"/><path d="M18.6 15.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>
+              <span>问 AI 助手</span>
+            </button>
           </div>
         </div>
       </div>
@@ -882,6 +895,10 @@ body::before {
           <div class="card-actions">
             <a class="btn-primary" href="javascript:void(0)" onclick="showPasswordModal()">进入工具 ↗</a>
             <a class="btn-ghost" href="javascript:void(0)" onclick="showPasswordModal()">🔗</a>
+            <button class="btn-ask" type="button" data-ask="电站仿真偏差分析工具怎么用？" title="问 AI：电站仿真偏差分析工具怎么用？">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l1.8 4.4 4.4 1.8-4.4 1.8L12 15.6l-1.8-4.4L5.8 9.4l4.4-1.8L12 3.2z"/><path d="M18.6 15.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>
+              <span>问 AI 助手</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1025,6 +1042,9 @@ document.addEventListener('keydown', function (e) {
   }
 })();
 </script>
+<script src="rag/config.js"></script>
+<script src="rag/retriever.js"></script>
+<script src="rag/assistant.js"></script>
 <script src="intro.js"></script>
 </body>
 </html>
