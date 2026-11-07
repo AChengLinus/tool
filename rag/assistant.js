@@ -4,7 +4,7 @@
    - 检索：rag/retriever.js（BM25 + 中文 bigram）
    - 回答：默认只用检索到的资料摘录（无需任何密钥）；
            在 rag/config.js 里填好 proxyUrl 后，改由代理调用大模型。
-   - 入口：右下角悬浮球（随机头像），也支持卡片上的「问 AI」按钮。
+   - 入口：右下角悬浮形象（全身、透明背景，随机切换），也支持卡片上的「问 AI」按钮。
    ============================================================ */
 (function () {
   'use strict';
@@ -16,7 +16,6 @@
   var SCRIPT_BASE = SCRIPT ? new URL('.', SCRIPT.src) : new URL('rag/', location.href);
   var ASSET_BASE = new URL('../assets/rag/', SCRIPT_BASE).href;
   var KB_URL = new URL('kb.json', SCRIPT_BASE).href;
-  var LOGO_URL = new URL('../logo.png', ASSET_BASE).href;
 
   var DEFAULTS = {
     proxyUrl: '',
@@ -32,7 +31,7 @@
   var cfg = Object.assign({}, DEFAULTS, window.RAG_CONFIG || {});
   cfg.byok = Object.assign({}, DEFAULTS.byok, (window.RAG_CONFIG || {}).byok || {});
 
-  var ORBS = [1, 2, 3, 4].map(function (n) { return ASSET_BASE + 'orb-' + n + '.png'; });
+  var PETS = [1, 2, 3, 4].map(function (n) { return ASSET_BASE + 'pet-' + n + '.png'; });
 
   var SUGGESTS = [
     { text: 'EL 裁剪怎么用？', ask: 'EL 裁剪工具怎么使用？' },
@@ -136,14 +135,14 @@
     dom.quota.textContent = '今日剩余 ' + remainingQuota() + ' 次';
   }
 
-  /** 每次重新进入页面时抽一张头像；同一次页面会话内保持不变。 */
+  /** 每次重新进入页面时抽一个形象；同一次页面会话内保持不变。 */
   function pickAvatar() {
     var next = state.avatar;
-    if (ORBS.length > 1) {
-      while (next === state.avatar) next = Math.floor(Math.random() * ORBS.length);
+    if (PETS.length > 1) {
+      while (next === state.avatar) next = Math.floor(Math.random() * PETS.length);
     }
     state.avatar = next;
-    var src = ORBS[next];
+    var src = PETS[next];
     dom.face.src = src;
     dom.headAvatar.src = src;
     dom.helloAvatar.src = src;
@@ -157,9 +156,7 @@
     root.setAttribute('data-open', 'false');
     root.innerHTML = [
       '<button class="rag-orb" type="button" aria-label="打开工具助手" aria-expanded="false" aria-controls="ragPanel">',
-      '  <span class="rag-orb__ping" aria-hidden="true"></span>',
       '  <img class="rag-orb__face" alt="" aria-hidden="true">',
-      '  <span class="rag-orb__badge" aria-hidden="true"><img alt=""></span>',
       '</button>',
       '<span class="rag-tip" role="status">有问题？问我试试</span>',
       '<section class="rag-panel" id="ragPanel" role="dialog" aria-label="工具助手" aria-hidden="true">',
@@ -198,7 +195,6 @@
     dom.root = root;
     dom.orb = root.querySelector('.rag-orb');
     dom.face = root.querySelector('.rag-orb__face');
-    dom.badge = root.querySelector('.rag-orb__badge img');
     dom.tip = root.querySelector('.rag-tip');
     dom.panel = root.querySelector('.rag-panel');
     dom.headAvatar = root.querySelector('.rag-head__avatar');
@@ -214,7 +210,6 @@
     dom.quota = root.querySelector('.rag-foot__quota');
     dom.toast = root.querySelector('.rag-toast');
 
-    dom.badge.src = LOGO_URL;
     buildSuggests();
     pickAvatar();
     preloadAvatars();
@@ -234,7 +229,7 @@
   }
 
   function preloadAvatars() {
-    ORBS.forEach(function (src) {
+    PETS.forEach(function (src) {
       var img = new Image();
       img.src = src;
     });
@@ -287,7 +282,7 @@
       avatar.className = 'rag-msg__avatar';
       avatar.alt = '';
       avatar.setAttribute('aria-hidden', 'true');
-      avatar.src = ORBS[state.avatar];
+      avatar.src = PETS[state.avatar];
       row.appendChild(avatar);
     }
     var stack = document.createElement('div');
