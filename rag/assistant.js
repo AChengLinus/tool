@@ -98,9 +98,14 @@
     storageSet(QUOTA_KEY, JSON.stringify({ day: quota.day, used: quota.used }));
   }
 
+  // 浏览器直连时用的 Key：优先本机 localStorage，其次 config.js 里预置的共享 Key
+  function directKey() {
+    return storageGet(BYOK_KEY) || (cfg.byok && cfg.byok.apiKey) || '';
+  }
+
   function canUseModel() {
     if (cfg.proxyUrl) return true;
-    return !!storageGet(BYOK_KEY);
+    return !!directKey();
   }
 
   function remainingQuota() {
@@ -460,6 +465,10 @@
     return messages;
   }
 
+  function sleep(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
   async function requestModel(question, results) {
     var endpoint;
     var headers = { 'Content-Type': 'application/json' };
@@ -470,7 +479,7 @@
       endpoint = cfg.proxyUrl;
       payload = { messages: messages, max_tokens: cfg.maxTokens, temperature: cfg.temperature };
     } else {
-      var key = storageGet(BYOK_KEY);
+      var key = directKey();
       if (!key) throw fail('no-key');
       endpoint = String(cfg.byok.baseUrl).replace(/\/+$/, '') + '/chat/completions';
       headers.Authorization = 'Bearer ' + key;
@@ -483,28 +492,38 @@
       };
     }
 
+    // 直连免费模型时有全局限流，遇到 429/5xx 自动退避重试；代理模式不重试。
+    var attempts = cfg.proxyUrl ? 1 : 3;
     var controller = new AbortController();
     state.abort = controller;
     var timer = setTimeout(function () { controller.abort(); }, 35000);
 
     try {
-      var res = await fetch(endpoint, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      if (res.status === 429) throw fail('quota');
-      if (res.status === 401 || res.status === 403) throw fail('auth');
-      if (!res.ok) throw fail('http', res.status);
-      var data = await res.json();
-      var answer = '';
-      if (data && typeof data.answer === 'string') answer = data.answer;
-      else if (data && data.choices && data.choices[0] && data.choices[0].message) {
-        answer = data.choices[0].message.content || '';
+      for (var attempt = 0; attempt < attempts; attempt++) {
+        var res = await fetch(endpoint, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        var retryable = res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504;
+        if (retryable && attempt < attempts - 1) {
+          await sleep(900 * (attempt + 1));
+          continue;
+        }
+        if (res.status === 429) throw fail(cfg.proxyUrl ? 'quota' : 'busy');
+        if (res.status === 401 || res.status === 403) throw fail('auth');
+        if (!res.ok) throw fail('http', res.status);
+        var data = await res.json();
+        var answer = '';
+        if (data && typeof data.answer === 'string') answer = data.answer;
+        else if (data && data.choices && data.choices[0] && data.choices[0].message) {
+          answer = data.choices[0].message.content || '';
+        }
+        if (!answer || !answer.trim()) throw fail('empty');
+        return answer.trim();
       }
-      if (!answer || !answer.trim()) throw fail('empty');
-      return answer.trim();
+      throw fail('busy');
     } catch (err) {
       if (err && err.name === 'AbortError') throw fail('timeout');
       throw err;
@@ -517,6 +536,7 @@
   function modelErrorMessage(err) {
     var code = err && err.code;
     if (code === 'quota') return '今日的提问次数用完了，明天再来试试～';
+    if (code === 'busy') return 'AI 当前比较忙（免费模型限流），先给你站内资料的摘录，稍后再试。';
     if (code === 'timeout') return 'AI 响应有点慢，已先给你站内资料的摘录。';
     if (code === 'auth') return '助手暂未配置好，已先给你站内资料的摘录。';
     if (code === 'no-key') return '未配置模型，先给你站内资料的摘录。';

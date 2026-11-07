@@ -21,11 +21,16 @@ window.RAG_CONFIG = {
   // 每个浏览器每天最多提问次数（前端软限额，真正的限额在代理端做）
   dailyLimit: 20,
 
-  // 本机调试用直连配置，仅在 localStorage['rag.byok.key'] 存在时生效。
-  // 控制台执行 localStorage.setItem('rag.byok.key','sk-你的Key') 后刷新，
-  // 只有你自己的浏览器会调用大模型，公开访客仍是站内检索。
+  // 直连模式：没有配置 proxyUrl 时，浏览器直接调用模型。
+  // 优先级：localStorage['rag.byok.key']（你本机调试）> 下面的 apiKey（访客共用）。
+  //
+  // ⚠️ 安全警告：下面的 apiKey 会随网页公开，任何人 F12 都能看到并拿走。
+  // 这是“免登录给所有访客用”的代价；只适合免费额度，被刷爆后去七牛控制台重置 Key。
+  // 免费模型还有全局并发限制，偶尔返回 429；前端会自动重试 2 次，仍失败则退回站内资料摘录。
+  // 以后部署了代理，把 apiKey 清空、改填 proxyUrl，Key 就只留在服务端。
   byok: {
     baseUrl: 'https://api.qnaigc.com/v1',
-    model: 'qiniu/conatus-free'
+    model: 'qiniu/conatus-free',
+    apiKey: 'sk-4030ac7b4b5f2ca25c58258fc1b244c662fc418f6c336baa7213c756cc54767a'
   }
 };
