@@ -1,5 +1,5 @@
 /* ============================================================
-   工具助手 · 站内 RAG 问答
+   Linus · 站内 RAG 问答
    ------------------------------------------------------------
    - 检索：rag/retriever.js（BM25 + 中文 bigram）
    - 回答：默认只用检索到的资料摘录（无需任何密钥）；
@@ -155,23 +155,23 @@
     root.className = 'rag-root';
     root.setAttribute('data-open', 'false');
     root.innerHTML = [
-      '<button class="rag-orb" type="button" aria-label="打开工具助手" aria-expanded="false" aria-controls="ragPanel">',
+      '<button class="rag-orb" type="button" aria-label="打开 Linus" aria-expanded="false" aria-controls="ragPanel">',
       '  <img class="rag-orb__face" alt="" aria-hidden="true">',
       '</button>',
-      '<span class="rag-tip" role="status">有问题？问我试试</span>',
-      '<section class="rag-panel" id="ragPanel" role="dialog" aria-label="工具助手" aria-hidden="true">',
+      '<span class="rag-tip" role="status">有问题？问 Linus</span>',
+      '<section class="rag-panel" id="ragPanel" role="dialog" aria-label="Linus" aria-hidden="true">',
       '  <header class="rag-head">',
       '    <img class="rag-head__avatar" alt="" aria-hidden="true">',
       '    <div class="rag-head__meta">',
-      '      <strong>工具助手</strong>',
+      '      <strong>Linus</strong>',
       '      <span class="rag-head__status" data-state="loading">正在加载站内资料…</span>',
       '    </div>',
-      '    <button class="rag-close" type="button" aria-label="关闭工具助手">×</button>',
+      '    <button class="rag-close" type="button" aria-label="关闭 Linus">×</button>',
       '  </header>',
       '  <div class="rag-body" id="ragBody" aria-live="polite" aria-atomic="false">',
       '    <div class="rag-hello">',
       '      <img class="rag-hello__avatar" alt="">',
-      '      <p>你好，我是工具助手</p>',
+      '      <p>你好，我是 Linus</p>',
       '      <p>可以问我 EL 裁剪、PR 数据处理、图片标记、电站仿真偏差分析这 4 个工具怎么用、参数怎么填、遇到问题怎么处理。</p>',
       '      <p class="rag-hello__hint">回答基于站内资料整理，仅供参考。</p>',
       '    </div>',
@@ -440,7 +440,7 @@
     }).join('\n\n');
 
     var system = [
-      '你是「项目工具盒」网站的站内助手，用简体中文回答访客关于本站 4 个工具的问题：EL 裁剪、PR 数据处理、图片标记、电站仿真偏差分析。',
+      '你是「项目工具盒」网站的站内助手 Linus，用简体中文回答访客关于本站 4 个工具的问题：EL 裁剪、PR 数据处理、图片标记、电站仿真偏差分析。',
       '规则：',
       '1. 只根据下面提供的资料回答；资料没有覆盖的内容，直接说“站内资料里没有这个说明”，并建议在 GitHub 联系 @AChengLinus。',
       '2. 回答简短、可执行；步骤多时用编号列表，尽量控制在 200 字以内。',
