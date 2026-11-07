@@ -21,9 +21,11 @@ window.RAG_CONFIG = {
   // 每个浏览器每天最多提问次数（前端软限额，真正的限额在代理端做）
   dailyLimit: 20,
 
-  // 本机调试用直连配置，仅在 localStorage['rag.byok.key'] 存在时生效
+  // 本机调试用直连配置，仅在 localStorage['rag.byok.key'] 存在时生效。
+  // 控制台执行 localStorage.setItem('rag.byok.key','sk-你的Key') 后刷新，
+  // 只有你自己的浏览器会调用大模型，公开访客仍是站内检索。
   byok: {
-    baseUrl: 'https://api.deepseek.com/v1',
-    model: 'deepseek-chat'
+    baseUrl: 'https://api.qnaigc.com/v1',
+    model: 'qiniu/conatus-free'
   }
 };
