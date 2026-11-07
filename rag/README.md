@@ -116,11 +116,32 @@ window.RAG_CONFIG = {
 
 > 注意：`*.workers.dev` 在国内部分网络下可能不稳定。如果访客主要在国内，优先用方案 B 或给 Worker 绑定自己的域名（需要把域名接入 Cloudflare）。
 
+#### 七牛云 / qnaigc 配置（当前使用的模型）
+
+`wrangler.toml` 里的 `[vars]` 已经填好，部署时只需要写 Secret：
+
+| 项 | 值 |
+|---|---|
+| Base URL | `https://api.qnaigc.com/v1` |
+| Model ID | `qiniu/conatus-free` |
+| API Key | 只通过 `wrangler secret put LLM_API_KEY` 写入 |
+
+```bash
+wrangler secret put LLM_API_KEY     # 粘贴七牛云 Key，回车
+wrangler deploy
+```
+
+站点目前证书还没签发、走的是 `http://tool.acheng9616.com`，所以 `ALLOWED_ORIGINS` 里 http/https 两条都留着；证书生效并切到 HTTPS 后，可以把 http 那条删掉再部署一次。
+
+> 安全提醒：任何出现在聊天、截图、Git 历史里的 Key 都应视为已泄露。如果 Key 曾经发出去过，先在七牛控制台重置，再把新 Key 写进 Secret；不要写进 `config.js` 或任何会提交的文件。
+
 ### 方案 B：自己的服务器（Python，标准库）
 
 ```bash
 set LLM_API_KEY=sk-xxxx
-set ALLOWED_ORIGINS=https://tool.acheng9616.com
+set LLM_BASE_URL=https://api.qnaigc.com/v1
+set LLM_MODEL=qiniu/conatus-free
+set ALLOWED_ORIGINS=https://tool.acheng9616.com,http://tool.acheng9616.com
 set HOST=0.0.0.0
 set PORT=8787
 python rag/proxy/server.py

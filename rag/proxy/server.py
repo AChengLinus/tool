@@ -38,7 +38,7 @@ ALLOWED = [
     s.strip()
     for s in os.environ.get(
         "ALLOWED_ORIGINS",
-        "https://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000",
+        "https://tool.acheng9616.com,http://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8019",
     ).split(",")
     if s.strip()
 ]

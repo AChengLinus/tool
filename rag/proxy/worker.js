@@ -22,7 +22,7 @@
 const DEFAULTS = {
   LLM_BASE_URL: 'https://api.deepseek.com/v1',
   LLM_MODEL: 'deepseek-chat',
-  ALLOWED_ORIGINS: 'https://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000',
+  ALLOWED_ORIGINS: 'https://tool.acheng9616.com,http://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8019',
   MAX_TOKENS: '700',
   DAILY_LIMIT: '30'
 };

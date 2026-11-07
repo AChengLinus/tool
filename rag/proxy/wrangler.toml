@@ -3,10 +3,12 @@ main = "worker.js"
 compatibility_date = "2025-06-01"
 
 [vars]
-LLM_BASE_URL = "https://api.deepseek.com/v1"
-LLM_MODEL = "deepseek-chat"
+# 当前使用七牛云推理（qnaigc）。换别家时改这两行即可。
+LLM_BASE_URL = "https://api.qnaigc.com/v1"
+LLM_MODEL = "qiniu/conatus-free"
 # 允许调用代理的站点，逗号分隔；不要写 *
-ALLOWED_ORIGINS = "https://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000"
+# 证书签发前站点走 http，签发后走 https，两个都保留最稳。
+ALLOWED_ORIGINS = "https://tool.acheng9616.com,http://tool.acheng9616.com,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8019"
 MAX_TOKENS = "700"
 DAILY_LIMIT = "30"
 
