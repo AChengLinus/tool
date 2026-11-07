@@ -159,6 +159,15 @@ localStorage.setItem('rag.byok.key', 'sk-你的Key');
 
 刷新后助手会用 `config.js` 里 `byok.baseUrl` + `byok.model` 直连。**这只适合你自己的浏览器**；公开页面上不要预置 Key。
 
+### 方案 D：前端直连共享 Key（当前线上采用）
+
+`config.js` 的 `byok.apiKey` 里预置了七牛云 Key，访客浏览器直接请求 `api.qnaigc.com`，不需要部署代理。
+
+- 优点：零运维，打开网页就能用。
+- 缺点：Key 随网页公开，任何人都能拿走；免费模型还有全局限流，偶尔 429。
+- 前端已做：遇到 429/5xx 自动重试 2 次（退避 0.9s、1.8s），仍失败就退回站内资料摘录；每浏览器每天 20 次软限额。
+- 额度被刷爆时：去七牛控制台重置 Key，更新 `config.js` 的 `apiKey` 并推送；长期使用建议换回方案 A/B。
+
 ## 限额与成本
 
 - 前端：`config.js` 的 `dailyLimit`（默认 20 次/浏览器/天），存在 localStorage，清缓存可绕过，只是体验层限制。
