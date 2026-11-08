@@ -744,6 +744,52 @@ body::before {
   display: none;
 }
 
+/* ===== Report Query Modal ===== */
+.report-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.report-info strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.report-info ol {
+  margin: 6px 0 16px;
+  padding-left: 22px;
+}
+
+.report-info li {
+  margin-bottom: 6px;
+}
+
+.report-info p {
+  margin-bottom: 6px;
+}
+
+.report-info p:last-child {
+  margin-bottom: 0;
+}
+
+.report-info a,
+.desc-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(59, 130, 246, 0.45);
+  transition: border-bottom-color 0.2s;
+}
+
+.report-info a:hover,
+.desc-link:hover {
+  border-bottom-color: var(--accent);
+}
+
+.desc-link {
+  white-space: nowrap;
+}
+
 @media (max-width: 600px) {
   .version-cards { grid-template-columns: 1fr; }
 }
@@ -1014,11 +1060,12 @@ body::before {
           <h2>报告查询系统</h2>
           <span class="sub">kdocs.cn</span>
           <p class="desc">
-            基于金山文档（kdocs.cn）的在线报告查询入口，用于查看与检索华矩检测相关的检测报告和资料。
+            2024 年及以后的报告可直接在线查询；更早的报告请通过机构邮件、电话或认监委监管平台查询。
+            <a class="desc-link" href="javascript:void(0)" onclick="showReportModal()">查看查询方式 →</a>
           </p>
           <div class="domain-tag"><span class="dot"></span>kdocs.cn/office/d/323730395367</div>
           <div class="card-actions">
-            <a class="btn-primary" href="https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn" target="_blank" rel="noopener">进入工具 ↗</a>
+            <a class="btn-primary" href="https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn" target="_blank" rel="noopener">点击查询 ↗</a>
             <a class="btn-ghost" href="https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn" target="_blank" rel="noopener">🔗</a>
             <button class="btn-ask" type="button" data-ask="报告查询系统怎么查报告？" title="问 AI：报告查询系统怎么查报告？">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l1.8 4.4 4.4 1.8-4.4 1.8L12 15.6l-1.8-4.4L5.8 9.4l4.4-1.8L12 3.2z"/><path d="M18.6 15.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>
@@ -1076,6 +1123,26 @@ body::before {
     </div>
   </div>
 </div>
+
+<!-- ===== Report Query Modal ===== -->
+<div class="modal-overlay" id="reportModal" onclick="if(event.target===this)closeReportModal()">
+  <div class="modal-box">
+    <h3>报告查询</h3>
+    <p class="sub">2024 年及以后的报告支持在线查询；更早的报告请通过以下方式获取。</p>
+    <div class="report-info">
+      <p><strong>2024 年之前的报告：</strong></p>
+      <ol>
+        <li>通过我机构的邮件、电话查询（联系方式见 <a href="https://www.huajujc.com" target="_blank" rel="noopener">华矩检测官网</a>）；</li>
+        <li>通过 <a href="https://cx.cnca.cn/" target="_blank" rel="noopener">认监委监管平台</a> 查询。</li>
+      </ol>
+      <p><strong>2024 年之后的报告：</strong>除上述方式外，还可以直接点击下方按钮，通过金山文档在线查询。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeReportModal()">关闭</button>
+      <a class="btn-primary" style="flex:none;" href="https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn" target="_blank" rel="noopener">点击查询 ↗</a>
+    </div>
+  </div>
+</div>
 </div><!-- /#site -->
 
 <script>
@@ -1115,10 +1182,19 @@ function checkPassword() {
   }
 }
 
+// ===== Report Query Modal =====
+function showReportModal() {
+  document.getElementById('reportModal').classList.add('open');
+}
+function closeReportModal() {
+  document.getElementById('reportModal').classList.remove('open');
+}
+
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     closeVersionModal();
     closePasswordModal();
+    closeReportModal();
   }
 });
 
