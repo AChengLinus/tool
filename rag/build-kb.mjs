@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KNOWLEDGE_DIR = path.join(HERE, 'knowledge');
 const OUT_FILE = path.join(HERE, 'kb.json');
-const DOC_ORDER = ['platform', 'el', 'pr', 'pt', 'dat'];
+const DOC_ORDER = ['platform', 'el', 'pr', 'pt', 'report', 'dat'];
 
 const MAX_CHUNK = 1100;
 const MIN_CHUNK = 60;
