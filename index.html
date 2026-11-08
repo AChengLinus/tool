@@ -524,6 +524,101 @@ body::before {
   transform: translateY(-2px);
 }
 
+/* ===== 公司实景 ===== */
+.office {
+  padding: 0 0 100px;
+}
+
+.office-inner {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+
+.office-photo {
+  position: relative;
+  margin: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 26px 70px rgba(15, 40, 90, 0.16);
+}
+
+.office-photo img {
+  display: block;
+  width: 100%;
+  height: clamp(280px, 34vw, 440px);
+  object-fit: cover;
+  object-position: center 42%;
+  transform: scale(1.01);
+  transition: transform 0.8s ease;
+}
+
+.office-photo:hover img {
+  transform: scale(1.05);
+}
+
+.office-photo figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 44px 22px 16px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(8, 22, 46, 0.72));
+}
+
+.office-kicker {
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+}
+
+.office h2 {
+  margin-bottom: 18px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.office-desc {
+  max-width: 46ch;
+  margin-bottom: 26px;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+.office-facts {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.office-facts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.office-facts strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.office-facts span {
+  color: var(--text-muted);
+}
+
 /* ===== Footer ===== */
 .footer {
   border-top: 1px solid var(--border);
@@ -770,6 +865,11 @@ body::before {
   .hero { padding: 80px 0 48px; }
   .hero h1 { font-size: 32px; }
   .hero-title { gap: 14px; }
+  .office { padding: 0 0 72px; }
+  .office-inner { grid-template-columns: 1fr; }
+  .office-photo img { height: 260px; }
+  .office-desc { font-size: 14.5px; }
+  .office-facts li { font-size: 13px; }
   .card-actions { flex-direction: column; }
   .card { padding: 26px 22px; }
 }
@@ -1024,6 +1124,28 @@ body::before {
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- ===== 公司实景 ===== -->
+<section class="office">
+  <div class="container office-inner">
+    <figure class="office-photo fade-in">
+      <img src="assets/office.jpg" alt="华矩检测公司门口实景：外墙「华矩检测 HUAJU TESTING」标牌与检测研发中心入口" loading="lazy">
+      <figcaption>华矩检测 · 研发中心</figcaption>
+    </figure>
+    <div class="office-copy fade-in">
+      <p class="office-kicker">COMPANY / 实地</p>
+      <h2>从检测现场，到在线工具</h2>
+      <p class="office-desc">
+        这里是华矩检测日常工作的地方。工具盒里的每一件小工具，都来自实验室与电站现场的真实需求：裁剪 EL 图像、核算 PR 数据、标注组件点位、查询检测报告。
+      </p>
+      <ul class="office-facts">
+        <li><strong>光伏 / 储能</strong><span>检测技术服务</span></li>
+        <li><strong>实验室 / 电站</strong><span>真实场景打磨</span></li>
+        <li><strong>在线工具</strong><span>5 个入口 · 持续更新</span></li>
+      </ul>
     </div>
   </div>
 </section>
