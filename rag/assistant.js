@@ -501,7 +501,7 @@
         };
 
     // 直连免费模型时有全局限流：主 Key 失败会自动换备用 Key，并退避重试；代理模式不重试。
-    var attempts = direct ? Math.min(6, Math.max(3, keys.length * 2)) : 1;
+    var attempts = direct ? Math.min(8, Math.max(4, keys.length * 3)) : 1;
     var controller = new AbortController();
     state.abort = controller;
     var timer = setTimeout(function () { controller.abort(); }, 35000);
@@ -532,7 +532,7 @@
         var retryable = res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504;
         var badKey = res.status === 401 || res.status === 403;
         if ((retryable || badKey) && attempt < attempts - 1) {
-          await sleep(900 * (attempt + 1));
+          await sleep(700 * (attempt + 1));
           continue;
         }
         if (badKey) throw fail('auth');
