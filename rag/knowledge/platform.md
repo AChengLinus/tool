@@ -6,7 +6,7 @@ url: https://tool.acheng9616.com/
 
 ## 项目工具盒是什么（这个网站是干什么的）
 
-项目工具盒（AChengLinus Tools）是华矩系列在线工具的统一入口，地址是 https://tool.acheng9616.com/ 。简单说，这个网站把 EL 裁剪、PR 数据处理、图片标记、电站仿真偏差分析、报告查询系统这 5 个入口集中在一个页面，方便访客直接进入或下载。首页用卡片形式列出工具，点击卡片即可进入对应工具或下载入口。
+项目工具盒（AChengLinus Tools）是华矩系列在线工具的统一入口，地址是 https://tool.acheng9616.com/ 。简单说，这个网站把 EL 裁剪、PR 数据处理、图片标记、电站仿真偏差分析、华矩报告查询系统这 5 个入口集中在一个页面，方便访客直接进入或下载。首页用卡片形式列出工具，点击卡片即可进入对应工具或下载入口。
 
 ## 首页的 5 个入口
 
@@ -14,7 +14,7 @@ url: https://tool.acheng9616.com/
 2. **PR 数据处理** —— 光伏电站 PR / PRstc 计算与报表导出，地址 https://pr.acheng9616.com/
 3. **图片标记** —— 光伏组件 EL 点位标注工具（ELMarker），地址 https://pt.acheng9616.com/
 4. **电站仿真偏差分析工具** —— HIL 实测与 PSCAD 仿真的偏差对比分析，地址 https://dat.acheng9616.com/
-5. **报告查询系统** —— 基于金山文档（kdocs.cn）的在线报告查询入口，地址 https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn
+5. **华矩报告查询系统** —— 华矩检测报告在线查询入口（金山文档托管，卡片上展示官网域名 www.huajujc.com），2024 年及以后的报告可直接在线查询，更早的报告请通过机构邮件、电话或认监委平台查询。查询地址 https://kdocs.cn/office/d/323730395367?share_id=Q0UUQfpKB1UUVn
 
 ## 如何进入工具
 
