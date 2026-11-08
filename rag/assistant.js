@@ -40,12 +40,20 @@
     { text: '偏差分析五区间？', ask: '电站仿真偏差分析工具里的五区间是什么意思？' }
   ];
 
+  // 气泡里轮流提示的问题：复用推荐问题，再补几条更具体的
+  var PROMPTS = SUGGESTS.concat([
+    { text: 'EL 黑边怎么调？', ask: 'EL 裁剪的外扩黑边参数怎么设置？' },
+    { text: 'PR 报表怎么导出？', ask: 'PR 数据处理工具怎么导出 Excel 或 CSV 报表？' },
+    { text: 'PRstc 是什么意思？', ask: 'PR 数据处理里的 PRstc 值是什么意思？' }
+  ]);
+
   var QUOTA_KEY = 'rag.quota.v1';
   var BYOK_KEY = 'rag.byok.key';
   var MAX_QUESTION = 500;
 
   var state = {
     ready: false,
+    kbFailed: false,
     open: false,
     busy: false,
     index: null,
@@ -57,6 +65,15 @@
   };
 
   var dom = {};
+
+  // 气泡提问提示的运行时状态
+  var pop = {
+    timer: 0,
+    hideTimer: 0,
+    index: 0,
+    shown: 0,
+    stopped: false
+  };
 
   /* ---------------- 工具函数 ---------------- */
 
@@ -173,6 +190,13 @@
       '  <img class="rag-orb__face" alt="" aria-hidden="true">',
       '</button>',
       '<span class="rag-tip" role="status">有问题？问 Linus</span>',
+      '<div class="rag-pop" aria-hidden="true">',
+      '  <button class="rag-pop__card" type="button" tabindex="-1">',
+      '    <span class="rag-pop__tip">可以问我</span>',
+      '    <span class="rag-pop__text"></span>',
+      '    <span class="rag-pop__hint">点击直接提问 →</span>',
+      '  </button>',
+      '</div>',
       '<section class="rag-panel" id="ragPanel" role="dialog" aria-label="Linus" aria-hidden="true">',
       '  <header class="rag-head">',
       '    <img class="rag-head__avatar" alt="" aria-hidden="true">',
@@ -210,6 +234,9 @@
     dom.orb = root.querySelector('.rag-orb');
     dom.face = root.querySelector('.rag-orb__face');
     dom.tip = root.querySelector('.rag-tip');
+    dom.pop = root.querySelector('.rag-pop');
+    dom.popCard = root.querySelector('.rag-pop__card');
+    dom.popText = root.querySelector('.rag-pop__text');
     dom.panel = root.querySelector('.rag-panel');
     dom.headAvatar = root.querySelector('.rag-head__avatar');
     dom.status = root.querySelector('.rag-head__status');
@@ -259,6 +286,7 @@
       dom.panel.setAttribute('aria-hidden', 'false');
       scrollToEnd();
     }
+    stopPop();
     if (focusInput !== false) {
       setTimeout(function () {
         dom.input.focus({ preventScroll: true });
@@ -273,11 +301,70 @@
     dom.orb.setAttribute('aria-expanded', 'false');
     dom.panel.setAttribute('aria-hidden', 'true');
     dom.orb.focus({ preventScroll: true });
+    schedulePop(9000);
   }
 
   function togglePanel() {
     if (state.open) closePanel();
     else openPanel();
+  }
+
+  /* ---------------- 气泡式提问提示 ---------------- */
+
+  var POP_VISIBLE = 7600;
+  var POP_MAX = 12;
+  var POP_GAP_MIN = 9000;
+  var POP_GAP_MAX = 15000;
+
+  function popAllowed() {
+    return !!dom.pop
+      && !state.kbFailed
+      && !pop.stopped
+      && !state.open
+      && !state.hasMessages
+      && !document.hidden
+      && pop.shown < POP_MAX;
+  }
+
+  function hidePop() {
+    if (!dom.pop) return;
+    dom.pop.classList.remove('is-on');
+    dom.pop.setAttribute('aria-hidden', 'true');
+  }
+
+  function stopPop() {
+    window.clearTimeout(pop.timer);
+    window.clearTimeout(pop.hideTimer);
+    pop.timer = 0;
+    pop.hideTimer = 0;
+    hidePop();
+  }
+
+  function showPop() {
+    if (!popAllowed()) return;
+    var item = PROMPTS[pop.index % PROMPTS.length];
+    pop.index += 1;
+    pop.shown += 1;
+
+    if (dom.popText) dom.popText.textContent = item.text;
+    if (dom.popCard) dom.popCard.setAttribute('data-ask', item.ask);
+    dom.pop.setAttribute('aria-hidden', 'false');
+    dom.pop.classList.add('is-on');
+
+    pop.hideTimer = window.setTimeout(function () {
+      hidePop();
+      schedulePop(POP_GAP_MIN + Math.random() * (POP_GAP_MAX - POP_GAP_MIN));
+    }, POP_VISIBLE);
+  }
+
+  function schedulePop(delay) {
+    window.clearTimeout(pop.timer);
+    if (!popAllowed()) return;
+    pop.timer = window.setTimeout(showPop, delay);
+  }
+
+  function startPop() {
+    schedulePop(4200);
   }
 
   /* ---------------- 消息渲染 ---------------- */
@@ -606,9 +693,19 @@
     if (!question) return;
     if (question.length > MAX_QUESTION) question = question.slice(0, MAX_QUESTION);
 
+    // 用户开口提问后，不再弹气泡提示
+    stopPop();
+    pop.stopped = true;
+
     if (!state.open) openPanel();
 
     if (!state.ready) {
+      if (state.kbFailed) {
+        showToast(location.protocol === 'file:'
+          ? '本地直接打开网页无法加载站内资料，请用网址访问（或启动本地服务）'
+          : '站内资料加载失败，请刷新页面重试');
+        return;
+      }
       state.pending = question;
       showToast('站内资料还在加载，马上就好…');
       return;
@@ -696,9 +793,14 @@
         }
       })
       .catch(function (err) {
+        // 直接双击 index.html（file://）时，浏览器会拦截本地 JSON 读取
+        var localFile = location.protocol === 'file:';
+        state.kbFailed = true;
         console.warn('[assistant] 知识库加载失败：', err && err.message);
-        setStatus('资料加载失败', 'error');
-        showToast('站内资料加载失败，请刷新页面重试');
+        setStatus(localFile ? '本地预览未加载资料' : '资料加载失败', 'error');
+        showToast(localFile
+          ? '本地直接打开网页时浏览器会拦截资料加载，请用网址访问或启动本地服务后预览'
+          : '站内资料加载失败，请刷新页面重试');
       });
   }
 
@@ -741,6 +843,11 @@
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
       dom.tip.textContent = '点我提问';
     }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopPop();
+      else schedulePop(8000);
+    });
   }
 
   /* ---------------- 启动 ---------------- */
@@ -770,6 +877,11 @@
     updateQuotaLabel();
     loadKB();
     handleDeepLink();
+
+    // 气泡提问提示：片头播放期间先不打扰，片头结束后再开始
+    window.addEventListener('site-ready', startPop);
+    window.addEventListener('intro-replay', stopPop);
+    if (!document.body.classList.contains('intro-active')) startPop();
 
     window.ToolAssistant = {
       open: openPanel,

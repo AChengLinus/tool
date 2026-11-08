@@ -664,17 +664,18 @@
 /* toast 提示 */
 .rag-toast {
   position: absolute;
-  left: 50%;
+  right: 0;
   bottom: 168px;
-  transform: translate(-50%, 8px);
-  max-width: 86%;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 40px));
+  transform: translateY(8px);
   padding: 8px 14px;
   border-radius: 10px;
   background: rgba(17, 34, 64, 0.92);
   color: #fff;
   font-size: 12px;
   line-height: 1.5;
-  text-align: center;
+  text-align: left;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -683,7 +684,7 @@
 
 .rag-toast.is-show {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateY(0);
 }
 
 @keyframes rag-fade-up {
@@ -818,5 +819,123 @@
   .rag-msg,
   .rag-suggest {
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   气泡式提问提示（从助手头像旁弹出的可点击气泡）
+   ============================================================ */
+
+.rag-pop {
+  position: absolute;
+  right: 10px;
+  bottom: 178px;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px) scale(0.92);
+  transform-origin: 100% 100%;
+  transition: opacity 0.24s ease, transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rag-pop.is-on {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.rag-root[data-open='true'] .rag-pop {
+  display: none;
+}
+
+.rag-pop__card {
+  position: relative;
+  display: block;
+  width: max-content;
+  max-width: min(272px, calc(100vw - 60px));
+  padding: 10px 14px 11px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 16px 16px 6px 16px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 14px 32px rgba(15, 40, 80, 0.16), 0 2px 6px rgba(15, 40, 80, 0.07);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rag-pop__card::after {
+  content: '';
+  position: absolute;
+  right: 9px;
+  bottom: -6px;
+  width: 11px;
+  height: 11px;
+  border-right: 1px solid rgba(37, 99, 235, 0.2);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 0 0 3px 0;
+  background: rgba(255, 255, 255, 0.98);
+  transform: rotate(45deg);
+}
+
+.rag-pop__card:hover {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 16px 36px rgba(15, 40, 80, 0.2), 0 2px 8px rgba(15, 40, 80, 0.1);
+}
+
+.rag-pop__card:focus {
+  outline: none;
+}
+
+.rag-pop__tip {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--rag-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.rag-pop__text {
+  display: block;
+  color: #1f3560;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+}
+
+.rag-pop__hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--rag-faint);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .rag-pop {
+    right: 6px;
+    bottom: 150px;
+  }
+
+  .rag-pop__card {
+    max-width: calc(100vw - 64px);
+    padding: 9px 12px 10px;
+  }
+
+  .rag-pop__text {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rag-pop {
+    transition: opacity 0.18s linear;
+    transform: none;
+  }
+
+  .rag-pop.is-on {
+    transform: none;
   }
 }

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>项目工具盒 — AChengLinus Tools</title>
-<link rel="icon" type="image/png" sizes="131x96" href="assets/favicon.png">
+<link rel="icon" type="image/png" sizes="250x159" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -153,6 +153,38 @@ body::before {
   line-height: 1.7;
 }
 
+/* 公司官网入口 */
+.hero-site {
+  margin: 0 0 22px;
+}
+
+.hero-site a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+
+.hero-site a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.hero-site .mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
 /* ===== 动态 logo ===== */
 .hero-title {
   display: flex;
@@ -169,8 +201,8 @@ body::before {
 
 .hero .logo {
   position: relative;
-  width: clamp(80px, 12vw, 108px);
-  height: clamp(80px, 12vw, 108px);
+  width: clamp(132px, 22vw, 200px);
+  height: clamp(132px, 22vw, 200px);
   flex-shrink: 0;
   perspective: 800px;
   animation: logoFloat 5s ease-in-out infinite;
@@ -203,11 +235,11 @@ body::before {
 
 .hero .logo img {
   position: relative;
-  width: 100%;
+  width: 100%; 
   height: 100%;
   object-fit: contain;
   z-index: 2;
-  filter: drop-shadow(0 6px 18px rgba(59, 130, 246, 0.45));
+  filter: drop-shadow(0 42px 18px rgba(59, 130, 246, 0.45));
   transition: transform 0.5s ease;
 }
 
@@ -511,6 +543,21 @@ body::before {
   color: var(--text-secondary);
 }
 
+.footer-site {
+  margin-top: 10px;
+}
+
+.footer-site a {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-site a:hover {
+  color: var(--accent);
+}
+
 /* ===== Version Choice Modal ===== */
 .modal-overlay {
   position: fixed;
@@ -677,6 +724,7 @@ body::before {
 @media (max-width: 600px) {
   .hero { padding: 80px 0 48px; }
   .hero h1 { font-size: 32px; }
+  .hero-title { gap: 14px; }
   .card-actions { flex-direction: column; }
   .card { padding: 26px 22px; }
 }
@@ -763,7 +811,7 @@ body::before {
     <div class="intro-progress" aria-hidden="true"><span></span></div>
     <div class="intro-footer-row">
       <span class="intro-status">BRAND IDENTIFICATION / 001</span>
-      <button type="button" class="skip-intro" id="skipIntro">跳过片头 <span>[ ESC ]</span></button>
+      <button type="button" class="skip-intro" id="skipIntro">跳过片头 <span>[ 点击任意处 ]</span></button>
       <span class="intro-year">MMXXVI</span>
     </div>
   </div>
@@ -782,6 +830,11 @@ body::before {
         <img src="assets/logo.png" alt="项目工具盒 logo">
       </div>
       <h1 id="heroTitle" tabindex="-1">项目<span class="gradient">工具盒</span></h1>
+    </div>
+    <div class="hero-site fade-in">
+      <a href="https://www.huajujc.com" target="_blank" rel="noopener">
+        华矩检测官网 <span class="mono">www.huajujc.com</span> ↗
+      </a>
     </div>
     <p class="fade-in">
       华矩系列工具的统一入口，汇集太阳能电池板检测与数据处理相关的各类在线工具，
@@ -911,6 +964,7 @@ body::before {
 <footer class="footer">
   <div class="container">
     <p>项目工具盒 · <span class="mono">AChengLinus Tools</span> · 华矩系列在线工具</p>
+    <p class="footer-site"><a href="https://www.huajujc.com" target="_blank" rel="noopener">公司官网 www.huajujc.com ↗</a></p>
   </div>
 </footer>
 

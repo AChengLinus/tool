@@ -225,10 +225,30 @@
     button.addEventListener("click", () => playIntro(true));
   });
 
+  // 全局快捷键：片头播放期间按任意（非修饰）键即跳过
+  const NON_SKIP_KEYS = new Set([
+    "Shift", "Control", "Alt", "Meta", "CapsLock", "AltGraph", "Dead",
+    "Fn", "FnLock", "Hyper", "Super", "Symbol", "SymbolLock", "Unidentified",
+  ]);
+
+  function isSkipKey(event) {
+    if (!event || event.defaultPrevented) return false;
+    if (event.ctrlKey || event.metaKey || event.altKey) return false;
+    const key = event.key || "";
+    if (!key || NON_SKIP_KEYS.has(key)) return false;
+    return true;
+  }
+
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !intro.hidden && !intro.classList.contains("is-leaving")) {
-      endIntro();
-    }
+    if (intro.hidden || intro.classList.contains("is-leaving")) return;
+    if (isSkipKey(event)) endIntro();
+  });
+
+  // 鼠标 / 触屏：进入后点一下任意位置也能跳过
+  document.addEventListener("pointerdown", (event) => {
+    if (intro.hidden || intro.classList.contains("is-leaving")) return;
+    if (event.button !== 0) return;
+    endIntro();
   });
 
   // Begin automatically when the page first becomes visible.
