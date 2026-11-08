@@ -22,15 +22,19 @@ window.RAG_CONFIG = {
   dailyLimit: 20,
 
   // 直连模式：没有配置 proxyUrl 时，浏览器直接调用模型。
-  // 优先级：localStorage['rag.byok.key']（你本机调试）> 下面的 apiKey（访客共用）。
+  // 优先级：localStorage['rag.byok.key']（你本机调试）> 下面的 apiKeys（访客共用）。
   //
-  // ⚠️ 安全警告：下面的 apiKey 会随网页公开，任何人 F12 都能看到并拿走。
+  // ⚠️ 安全警告：apiKeys 会随网页公开，任何人 F12 都能看到并拿走。
   // 这是“免登录给所有访客用”的代价；只适合免费额度，被刷爆后去七牛控制台重置 Key。
-  // 免费模型还有全局并发限制，偶尔返回 429；前端会自动重试 2 次，仍失败则退回站内资料摘录。
-  // 以后部署了代理，把 apiKey 清空、改填 proxyUrl，Key 就只留在服务端。
+  // 免费模型有全局限流，偶尔 429；前端会在多个 Key 之间轮换 + 退避重试，
+  // 仍失败则退回站内资料摘录。以后部署了代理，清空 apiKeys、改填 proxyUrl，Key 就只留在服务端。
   byok: {
     baseUrl: 'https://api.qnaigc.com/v1',
     model: 'qiniu/conatus-free',
-    apiKey: 'sk-4030ac7b4b5f2ca25c58258fc1b244c662fc418f6c336baa7213c756cc54767a'
+    // 主 Key、备用 Key；遇到 429/5xx 或某个 Key 失效时自动换下一个
+    apiKeys: [
+      'sk-4030ac7b4b5f2ca25c58258fc1b244c662fc418f6c336baa7213c756cc54767a',
+      'sk-7437992150d8886ac5e6961d5f6f1de9e941ba6e71df46c92394acc62b829644'
+    ]
   }
 };

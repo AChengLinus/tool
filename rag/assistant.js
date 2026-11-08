@@ -98,9 +98,18 @@
     storageSet(QUOTA_KEY, JSON.stringify({ day: quota.day, used: quota.used }));
   }
 
-  // 浏览器直连时用的 Key：优先本机 localStorage，其次 config.js 里预置的共享 Key
+  // 直连时用的 Key 列表：优先本机 localStorage（只取一个），其次是 config.js 预置的主/备 Key
+  function directKeys() {
+    var own = storageGet(BYOK_KEY);
+    if (own && own.trim()) return [own.trim()];
+    var list = (cfg.byok && cfg.byok.apiKeys) || [];
+    if (!list.length && cfg.byok && cfg.byok.apiKey) list = [cfg.byok.apiKey];
+    return list.filter(function (k) { return typeof k === 'string' && k.trim(); })
+      .map(function (k) { return k.trim(); });
+  }
+
   function directKey() {
-    return storageGet(BYOK_KEY) || (cfg.byok && cfg.byok.apiKey) || '';
+    return directKeys()[0] || '';
   }
 
   function canUseModel() {
@@ -470,58 +479,65 @@
   }
 
   async function requestModel(question, results) {
-    var endpoint;
-    var headers = { 'Content-Type': 'application/json' };
-    var payload;
-    var messages = buildMessages(question, results);
+    var direct = !cfg.proxyUrl;
+    var keys = direct ? directKeys() : [];
+    if (direct && !keys.length) throw fail('no-key');
 
-    if (cfg.proxyUrl) {
-      endpoint = cfg.proxyUrl;
-      payload = { messages: messages, max_tokens: cfg.maxTokens, temperature: cfg.temperature };
-    } else {
-      var key = directKey();
-      if (!key) throw fail('no-key');
-      endpoint = String(cfg.byok.baseUrl).replace(/\/+$/, '') + '/chat/completions';
-      headers.Authorization = 'Bearer ' + key;
-      payload = {
-        model: cfg.byok.model,
-        messages: messages,
-        max_tokens: cfg.maxTokens,
-        temperature: cfg.temperature,
-        stream: false
-      };
-    }
+    var endpoint = direct
+      ? String(cfg.byok.baseUrl).replace(/\/+$/, '') + '/chat/completions'
+      : cfg.proxyUrl;
+    var payload = direct
+      ? {
+          model: cfg.byok.model,
+          messages: buildMessages(question, results),
+          max_tokens: cfg.maxTokens,
+          temperature: cfg.temperature,
+          stream: false
+        }
+      : {
+          messages: buildMessages(question, results),
+          max_tokens: cfg.maxTokens,
+          temperature: cfg.temperature
+        };
 
-    // 直连免费模型时有全局限流，遇到 429/5xx 自动退避重试；代理模式不重试。
-    var attempts = cfg.proxyUrl ? 1 : 3;
+    // 直连免费模型时有全局限流：主 Key 失败会自动换备用 Key，并退避重试；代理模式不重试。
+    var attempts = direct ? Math.min(6, Math.max(3, keys.length * 2)) : 1;
     var controller = new AbortController();
     state.abort = controller;
     var timer = setTimeout(function () { controller.abort(); }, 35000);
 
     try {
       for (var attempt = 0; attempt < attempts; attempt++) {
+        var headers = { 'Content-Type': 'application/json' };
+        if (direct) headers.Authorization = 'Bearer ' + keys[attempt % keys.length];
+
         var res = await fetch(endpoint, {
           method: 'POST',
           headers: headers,
           body: JSON.stringify(payload),
           signal: controller.signal
         });
+
+        if (res.ok) {
+          var data = await res.json();
+          var answer = '';
+          if (data && typeof data.answer === 'string') answer = data.answer;
+          else if (data && data.choices && data.choices[0] && data.choices[0].message) {
+            answer = data.choices[0].message.content || '';
+          }
+          if (answer && answer.trim()) return answer.trim();
+          throw fail('empty');
+        }
+
         var retryable = res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504;
-        if (retryable && attempt < attempts - 1) {
+        var badKey = res.status === 401 || res.status === 403;
+        if ((retryable || badKey) && attempt < attempts - 1) {
           await sleep(900 * (attempt + 1));
           continue;
         }
+        if (badKey) throw fail('auth');
         if (res.status === 429) throw fail(cfg.proxyUrl ? 'quota' : 'busy');
-        if (res.status === 401 || res.status === 403) throw fail('auth');
-        if (!res.ok) throw fail('http', res.status);
-        var data = await res.json();
-        var answer = '';
-        if (data && typeof data.answer === 'string') answer = data.answer;
-        else if (data && data.choices && data.choices[0] && data.choices[0].message) {
-          answer = data.choices[0].message.content || '';
-        }
-        if (!answer || !answer.trim()) throw fail('empty');
-        return answer.trim();
+        throw fail('http', res.status);
       }
       throw fail('busy');
     } catch (err) {

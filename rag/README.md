@@ -29,7 +29,7 @@
 | 服务端代理（推荐） | 只存在 Worker / 服务器的环境变量里 | 公开访客 + 真实 AI 回答 |
 | 本机 BYOK | 只存在**你自己浏览器**的 localStorage | 站长本机调试，不要给访客用 |
 
-`rag/config.js` 里的 `byok` 只在本机 `localStorage['rag.byok.key']` 存在时生效，访客页面不会带任何 Key。
+`rag/config.js` 的 `byok.apiKeys` 是**公开共享 Key**（方案 D，当前线上采用），访客页面会带 Key；`localStorage['rag.byok.key']` 只用于站长本机覆盖测试。安全取舍见下文「方案 D」。
 
 ## 目录结构
 
@@ -161,12 +161,12 @@ localStorage.setItem('rag.byok.key', 'sk-你的Key');
 
 ### 方案 D：前端直连共享 Key（当前线上采用）
 
-`config.js` 的 `byok.apiKey` 里预置了七牛云 Key，访客浏览器直接请求 `api.qnaigc.com`，不需要部署代理。
+`config.js` 的 `byok.apiKeys` 里预置了七牛云的主 Key 和备用 Key，访客浏览器直接请求 `api.qnaigc.com`，不需要部署代理。
 
 - 优点：零运维，打开网页就能用。
 - 缺点：Key 随网页公开，任何人都能拿走；免费模型还有全局限流，偶尔 429。
-- 前端已做：遇到 429/5xx 自动重试 2 次（退避 0.9s、1.8s），仍失败就退回站内资料摘录；每浏览器每天 20 次软限额。
-- 额度被刷爆时：去七牛控制台重置 Key，更新 `config.js` 的 `apiKey` 并推送；长期使用建议换回方案 A/B。
+- 前端已做：按「主 Key → 备用 Key」轮换，遇到 429/5xx/Key 失效自动换下一个并退避重试（最多 6 次），仍失败就退回站内资料摘录；每浏览器每天 20 次软限额。
+- 某个 Key 被刷爆/吊销时：去七牛控制台重置，更新 `config.js` 的 `apiKeys` 数组并推送；长期使用建议换回方案 A/B。
 
 ## 限额与成本
 
